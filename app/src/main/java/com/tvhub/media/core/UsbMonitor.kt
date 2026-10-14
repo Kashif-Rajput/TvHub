@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Environment
 import android.os.SystemClock
 import android.os.storage.StorageManager
@@ -44,7 +45,7 @@ object UsbMonitor {
             }
         }, filter, ContextCompat.RECEIVER_EXPORTED)
 
-        runCatching {
+        if (Build.VERSION.SDK_INT >= 30) runCatching {
             val sm = app.getSystemService(StorageManager::class.java)
             sm.registerStorageVolumeCallback(ContextCompat.getMainExecutor(app),
                 object : StorageManager.StorageVolumeCallback() {

@@ -20,13 +20,17 @@ object Perms {
         ) else arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 
     fun hasMedia(context: Context): Boolean =
-        Environment.isExternalStorageManager() || mediaPermissions().all {
+        hasAllFiles() || mediaPermissions().all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
 
-    fun hasAllFiles(): Boolean = Environment.isExternalStorageManager()
+    /** Only exists on Android 11+. On Android 9/10 normal storage permission already reads everything. */
+    fun hasAllFiles(): Boolean = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
+
+    fun allFilesSupported(): Boolean = Build.VERSION.SDK_INT >= 30
 
     fun openAllFilesSettings(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT < 30) return false
         val pkg = Uri.parse("package:${context.packageName}")
         return tryStart(context, Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, pkg)) ||
             tryStart(context, Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))

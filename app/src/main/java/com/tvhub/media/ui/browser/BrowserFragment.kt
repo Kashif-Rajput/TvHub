@@ -326,7 +326,9 @@ class BrowserFragment : Fragment() {
             vm.rememberFocus(pos)
             pendingVolume = v
             try {
-                treeLauncher.launch(v.volume.createOpenDocumentTreeIntent())
+                val intent = if (android.os.Build.VERSION.SDK_INT >= 29) v.volume.createOpenDocumentTreeIntent()
+                else Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                treeLauncher.launch(intent)
             } catch (e: ActivityNotFoundException) {
                 pendingVolume = null
                 Toast.makeText(requireContext(), R.string.no_picker, Toast.LENGTH_LONG).show()

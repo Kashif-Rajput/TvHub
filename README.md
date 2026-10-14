@@ -1,6 +1,6 @@
 # TV Hub: halki, tez Android TV media app
 
-Android 11+ TV ke liye. Isay remote se poora chalaya ja sakta hai, root ki zaroorat nahi, aur original launcher hamesha wapas aa sakta hai.
+Android 9 aur us se naye TV ke liye. Isay remote se poora chalaya ja sakta hai, root ki zaroorat nahi, aur original launcher hamesha wapas aa sakta hai.
 
 > **Imaandaari ki baat:** yeh project jis computer par likha gaya, wahan Android SDK download karna mumkin nahi tha. Is liye **APK abhi tak build ya test nahi hui.** Code ko dhyan se check kiya gaya hai, lekin pehli build aap ke Android Studio mein hogi. Agar koi error aaye to uska text bhej dein, main theek kar dunga.
 

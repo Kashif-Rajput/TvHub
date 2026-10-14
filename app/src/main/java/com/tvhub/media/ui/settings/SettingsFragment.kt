@@ -93,7 +93,13 @@ class SettingsFragment : Fragment() {
             }
         },
         Row(R.string.set_all_files, value = {
-            getString(if (Perms.hasAllFiles()) R.string.granted else R.string.not_granted)
+            getString(
+                when {
+                    !Perms.allFilesSupported() -> R.string.not_needed
+                    Perms.hasAllFiles() -> R.string.granted
+                    else -> R.string.not_granted
+                }
+            )
         }) {
             if (!Perms.openAllFilesSettings(requireContext())) toast(R.string.setting_unavailable)
         },
@@ -177,16 +183,21 @@ class SettingsFragment : Fragment() {
 
     @Suppress("DEPRECATION")
     private fun displaySummary(): String {
-        val d = requireActivity().display ?: return "?"
+        val d = (if (Build.VERSION.SDK_INT >= 30) requireActivity().display
+        else requireActivity().windowManager.defaultDisplay) ?: return "?"
         val m = d.mode
         val hdr = d.hdrCapabilities?.supportedHdrTypes?.isNotEmpty() == true
         return "${m.physicalWidth}×${m.physicalHeight} @ ${m.refreshRate.toInt()} Hz" + if (hdr) " · HDR" else ""
     }
 
+    private fun isHardware(info: android.media.MediaCodecInfo): Boolean =
+        if (Build.VERSION.SDK_INT >= 29) info.isHardwareAccelerated
+        else !info.name.startsWith("OMX.google.", true) && !info.name.startsWith("c2.android.", true)
+
     private fun decoderSummary(): String {
         val infos = MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos.filter { !it.isEncoder }
         fun hw(mime: String) = infos.any { info ->
-            info.isHardwareAccelerated && info.supportedTypes.any { it.equals(mime, ignoreCase = true) }
+            isHardware(info) && info.supportedTypes.any { it.equals(mime, ignoreCase = true) }
         }
         fun any(mime: String) = infos.any { info -> info.supportedTypes.any { it.equals(mime, ignoreCase = true) } }
         val video = listOf(

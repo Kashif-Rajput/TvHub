@@ -1,6 +1,7 @@
 package com.tvhub.media.data
 
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.os.storage.StorageManager
@@ -25,7 +26,7 @@ object Volumes {
     fun list(context: Context): List<VolumeInfo> {
         val sm = context.getSystemService(StorageManager::class.java) ?: return emptyList()
         return sm.storageVolumes.map { v ->
-            val dir = v.directory
+            val dir = if (Build.VERSION.SDK_INT >= 30) v.directory else legacyDir(v)
             val mounted = v.state == Environment.MEDIA_MOUNTED ||
                 v.state == Environment.MEDIA_MOUNTED_READ_ONLY
             var total = 0L
@@ -44,12 +45,25 @@ object Volumes {
                 removable = v.isRemovable,
                 primary = v.isPrimary,
                 mounted = mounted,
-                mediaStoreName = v.mediaStoreVolumeName,
+                mediaStoreName = mediaStoreName(v),
                 totalBytes = total,
                 freeBytes = free,
                 volume = v
             )
         }
+    }
+
+    /** Android 9/10 have no StorageVolume.directory; the mount point is predictable. */
+    private fun legacyDir(v: StorageVolume): File? = when {
+        v.isPrimary -> @Suppress("DEPRECATION") Environment.getExternalStorageDirectory()
+        v.uuid != null -> File("/storage/${v.uuid}")
+        else -> null
+    }
+
+    private fun mediaStoreName(v: StorageVolume): String? = when {
+        Build.VERSION.SDK_INT >= 30 -> v.mediaStoreVolumeName
+        Build.VERSION.SDK_INT == 29 -> if (v.isPrimary) "external_primary" else v.uuid?.lowercase()
+        else -> null // Android 9: one shared "external" index, filtered by path instead
     }
 
     fun removable(context: Context): List<VolumeInfo> = list(context).filter { it.removable && it.mounted }

@@ -1,11 +1,15 @@
 package com.tvhub.media.data
 
+import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaMetadataRetriever
 import android.media.ThumbnailUtils
 import android.net.Uri
+import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Size
@@ -57,12 +61,15 @@ class ThumbFetcher(
 
     private fun load(size: Size): Bitmap? {
         val uri = data.uri
-        if (uri != null && uri.authority == MediaStore.AUTHORITY) {
-            return context.contentResolver.loadThumbnail(uri, size, null)
-        }
         val path = data.path
+        val modern = Build.VERSION.SDK_INT >= 29
+        if (uri != null && uri.authority == MediaStore.AUTHORITY) {
+            if (modern) return context.contentResolver.loadThumbnail(uri, size, null)
+            legacyMediaStoreThumb(uri, size)?.let { return it }
+        }
         if (path != null) {
             val f = File(path)
+            if (!modern) return legacyFileThumb(f, size)
             return when (data.kind) {
                 MediaKind.VIDEO -> ThumbnailUtils.createVideoThumbnail(f, size, null)
                 MediaKind.AUDIO -> ThumbnailUtils.createAudioThumbnail(f, size, null)
@@ -76,6 +83,55 @@ class ThumbFetcher(
         }
         return null
     }
+
+    // ---------------------------------------------------------------- Android 9 fallbacks
+
+    @Suppress("DEPRECATION")
+    private fun legacyMediaStoreThumb(uri: Uri, size: Size): Bitmap? {
+        val id = runCatching { ContentUris.parseId(uri) }.getOrNull() ?: return null
+        val cr = context.contentResolver
+        val bmp = when (data.kind) {
+            MediaKind.VIDEO -> MediaStore.Video.Thumbnails.getThumbnail(cr, id, MediaStore.Video.Thumbnails.MINI_KIND, null)
+            MediaKind.IMAGE -> MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
+            MediaKind.AUDIO -> null // handled from the file path below
+        } ?: return null
+        return fit(bmp, size)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun legacyFileThumb(f: File, size: Size): Bitmap? = when (data.kind) {
+        MediaKind.VIDEO -> ThumbnailUtils.createVideoThumbnail(f.path, MediaStore.Video.Thumbnails.MINI_KIND)?.let { fit(it, size) }
+        MediaKind.IMAGE -> decodeSampled(size) { opts -> BitmapFactory.decodeFile(f.path, opts) }
+        MediaKind.AUDIO -> {
+            val r = MediaMetadataRetriever()
+            try {
+                r.setDataSource(f.path)
+                r.embeddedPicture?.let { bytes ->
+                    decodeSampled(size) { opts -> BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts) }
+                }
+            } finally {
+                runCatching { r.release() }
+            }
+        }
+    }
+
+    /** Decode only as many pixels as the tile needs (never a full 12-megapixel photo). */
+    private inline fun decodeSampled(size: Size, decode: (BitmapFactory.Options) -> Bitmap?): Bitmap? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        decode(bounds)
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+        var sample = 1
+        while (bounds.outWidth / (sample * 2) >= size.width && bounds.outHeight / (sample * 2) >= size.height) sample *= 2
+        val opts = BitmapFactory.Options().apply {
+            inSampleSize = sample
+            inPreferredConfig = Bitmap.Config.RGB_565
+        }
+        return decode(opts)
+    }
+
+    private fun fit(bmp: Bitmap, size: Size): Bitmap =
+        if (bmp.width <= size.width * 2 && bmp.height <= size.height * 2) bmp
+        else ThumbnailUtils.extractThumbnail(bmp, size.width, size.height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT)
 
     class Factory(private val context: Context) : Fetcher.Factory<Thumb> {
         override fun create(data: Thumb, options: Options, imageLoader: ImageLoader): Fetcher =

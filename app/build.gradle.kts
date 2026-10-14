@@ -11,16 +11,29 @@ android {
 
     defaultConfig {
         applicationId = "com.tvhub.media"
-        minSdk = 30          // Android 11
+        minSdk = 28          // Android 9 (many local TVs are Android 9 even if they say otherwise)
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         // Budget TVs are ARM. Dropping x86 keeps the APK small.
         ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
     }
 
+    // Fixed key so every new APK installs over the old one (no uninstall needed).
+    signingConfigs {
+        create("tvhub") {
+            storeFile = file("tvhub.jks")
+            storePassword = "tvhub123"
+            keyAlias = "tvhub"
+            keyPassword = "tvhub123"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("tvhub")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -28,8 +41,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Sideload-friendly default. Replace with your own keystore for long-term use (see README).
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("tvhub")
         }
     }
 

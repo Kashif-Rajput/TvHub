@@ -103,6 +103,7 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="granted">Granted</string>
+    <string name="not_needed">Not needed on this TV</string>
     <string name="not_granted">Not granted</string>
     <string name="cleared">Cleared</string>
     <string name="setting_unavailable">This TV doesn\'t provide that settings screen.</string>

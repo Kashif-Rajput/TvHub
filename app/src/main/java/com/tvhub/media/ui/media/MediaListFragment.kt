@@ -69,7 +69,11 @@ class MediaListViewModel(app: Application) : AndroidViewModel(app) {
         job?.cancel() // drop any older, slower scan
         job = viewModelScope.launch {
             _state.update { it.copy(loading = true, needsPermission = false) }
-            raw = MediaRepository.load(getApplication(), kind, _state.value.volume)
+            val app = getApplication<Application>()
+            val volId = _state.value.volume
+            val vi = if (volId == null) null
+            else withContext(Dispatchers.IO) { Volumes.list(app).firstOrNull { it.id == volId } }
+            raw = MediaRepository.load(app, kind, vi?.mediaStoreName, vi?.dir?.path)
             val sorted = withContext(Dispatchers.Default) { MediaRepository.sort(raw, _state.value.sort) }
             _state.update { it.copy(loading = false, loaded = true, items = sorted) }
         }
@@ -89,9 +93,9 @@ class MediaListViewModel(app: Application) : AndroidViewModel(app) {
     fun nextVolume() {
         viewModelScope.launch {
             val vols = withContext(Dispatchers.IO) {
-                Volumes.list(getApplication()).filter { it.mounted && it.mediaStoreName != null }
+                Volumes.list(getApplication()).filter { it.mounted && (it.mediaStoreName != null || it.dir != null) }
             }
-            val choices = listOf<Pair<String?, String?>>(null to null) + vols.map { it.mediaStoreName to it.label }
+            val choices = listOf<Pair<String?, String?>>(null to null) + vols.map { it.id to it.label }
             val cur = choices.indexOfFirst { it.first == _state.value.volume }.coerceAtLeast(0)
             val next = choices[(cur + 1) % choices.size]
             _state.update { it.copy(volume = next.first, volumeLabel = next.second) }
