@@ -39,6 +39,7 @@ import com.tvhub.media.ui.media.MediaListFragment
 import com.tvhub.media.ui.settings.SettingsFragment
 import com.tvhub.media.ui.youtube.YouTubeFragment
 import com.tvhub.media.player.YouTubePlayerActivity
+import com.tvhub.media.web.WebTvActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -151,7 +152,11 @@ class HomeFragment : Fragment(), MenuKeyHandler {
         AppLauncher.services.forEach { svc ->
             list += Tile(svc.id, getString(svc.labelRes), svc.iconRes)
             // In-app sections sit right after the YouTube tile.
-            if (svc.id == "youtube") list += Tile("movies", getString(R.string.tile_movies), R.drawable.ic_clapper)
+            // Movies & TV and Web TV open Watcho's own website inside TV Hub (not YouTube).
+            if (svc.id == "youtube") {
+                list += Tile("movies", getString(R.string.tile_movies), R.drawable.ic_clapper, status = getString(R.string.status_watcho_web))
+                list += Tile("webtv", getString(R.string.tile_webtv), R.drawable.ic_tv, status = getString(R.string.status_watcho_web))
+            }
         }
         list += Tile("usb", getString(R.string.tile_usb), R.drawable.ic_usb)
         list += Tile("videos", getString(R.string.tile_videos), R.drawable.ic_video)
@@ -258,7 +263,8 @@ class HomeFragment : Fragment(), MenuKeyHandler {
     private fun onTile(tile: Tile) {
         when (tile.id) {
             "youtube" -> { main().navigate(YouTubeFragment.newInstance(YouTubeFragment.MODE_YOUTUBE)); return }
-            "movies" -> { main().navigate(YouTubeFragment.newInstance(YouTubeFragment.MODE_MOVIES)); return }
+            "movies" -> { WebTvActivity.open(requireContext(), WebTvActivity.KEY_MOVIES, tile.label); return }
+            "webtv" -> { WebTvActivity.open(requireContext(), WebTvActivity.KEY_LIVE, tile.label); return }
         }
         val svc = AppLauncher.services.firstOrNull { it.id == tile.id }
         if (svc != null) {

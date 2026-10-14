@@ -60,6 +60,18 @@ object Prefs {
         get() = sp.getString("yt_region", "PK") ?: "PK"
         set(v) = sp.edit { putString("yt_region", v) }
 
+    /** Start page saved for a Watcho website tile ("movies" / "live"). Null = Watcho home page. */
+    fun webStart(key: String): String? = sp.getString("web_start_$key", null)
+
+    fun setWebStart(key: String, url: String?) = sp.edit {
+        if (url == null) remove("web_start_$key") else putString("web_start_$key", url)
+    }
+
+    /** Show websites in desktop layout (better on a big TV screen). */
+    var webDesktop: Boolean
+        get() = sp.getBoolean("web_desktop", true)
+        set(v) = sp.edit { putBoolean("web_desktop", v) }
+
     var ytLastSearch: String
         get() = sp.getString("yt_last", "") ?: ""
         set(v) = sp.edit { putString("yt_last", v) }

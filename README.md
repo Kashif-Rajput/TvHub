@@ -34,10 +34,20 @@ Android 9 aur us se naye TV ke liye. Isay remote se poora chalaya ja sakta hai, 
 
 ---
 
+## 1B. Naya (version 1.3.0): "Movies & TV" aur "Web TV" ab Watcho ki website se
+
+- **Movies & TV** aur **Web TV** tiles ab YouTube se nahi, **Watcho ki apni website (watcho.pk)** TV Hub ke andar kholti hain. Movies, shows aur Live TV channels wahi aate hain jo Watcho par hain, aur Watcho ka apna player hi chalata hai.
+- **Account ki zaroorat nahi:** watcho.pk free chalti hai, seedha movie ya channel par OK dabayein.
+- **Remote se chalana (screen par teer/pointer):** ▲▼◀▶ = pointer chalayein (dabaye rakhein to tez) · screen ke kinare par pahunch kar aur dabayein to page scroll hota hai · **OK = click** · OK dabaye rakhein = long-press / slider kheenchna · CH+ / CH− = poora page scroll · ⏯ = play/pause · ⏪ ⏩ = 10 second · **Back** = full screen se bahar → pichhla page → band.
+- **Menu button:** Home, **Type text** (agar keyboard na khule: pehle box par OK, phir Menu → Type text), Zoom in/out, **"Open this page every time"** (jaise Live TV wala page khol kar yeh dabayein, phir **Web TV** tile seedha wahi kholegi), Desktop/Mobile website, Watcho app kholein, Sign out.
+- **Tip:** Web TV tile mein ek dafa Watcho ka **Live TV** page kholein aur Menu → "Open this page every time" dabayein. Movies & TV tile mein Movies page ke saath yahi karein.
+- **Watcho** tile pehle ki tarah official Watcho app kholti hai. **YouTube** tile mein koi tabdeeli nahi.
+- Website ka address badalna ho to Menu → Website address…
+
 ## 1A. Naya (version 1.1.0 / 1.2.0): YouTube aur "Movies & TV" app ke andar
 
 - **YouTube tile:** upar search box hai. OK dabayein, keyboard khulega, likh kar Search dabayein (remote mein mic ho to 🎤 Voice bhi). Results neeche aate hain. Kisi video par OK dabayein, woh **TV Hub ke andar** chalegi. Neeche scroll karne par aur videos khud aati hain. Search ke neeche Trending, Top Music, Live News, Cricket waghera ke button bhi hain.
-- **Movies & TV tile (Watcho jaisi, version 1.2.0):** upar 3 tabs hain: **Movies**, **Videos**, **TV Channels**. Har tab mein apna search box hai.
+- **Movies & TV tile (version 1.2.0, ab 1.3.0 mein Watcho website se badal di gayi):** upar 3 tabs hain: **Movies**, **Videos**, **TV Channels**. Har tab mein apna search box hai.
   - **Movies:** Hollywood, Hollywood (Hindi), Bollywood, South (Hindi Dubbed), Pakistani, Punjabi, Action, Comedy, Horror, Romantic, Cartoon Movies, Islamic History. Saal ke buttons: **Latest** (pichhle 6 mahine mein aayi), 2026, 2025 ... 2000. Search mein film ka naam likhein, saal bhi chun sakte hain.
   - **Videos:** Reality Shows, Songs, Pakistani Dramas, Indian Serials, Web Series, Comedy Shows, Talk Shows, Kids, Cooking, Naat / Bayan, Cricket, Documentaries. Har section mein pichhle 30 din ki latest videos.
   - **TV Channels:** All Live, Pakistan News, India News, World News, Sports, Religious, Entertainment, Music, Kids. Sirf jo is waqt live chal rahe hain. Search mein channel ka naam likhein (jaise Geo, ARY, PTV).
@@ -70,7 +80,7 @@ Doosra tareeqa: TV par **Settings → YouTube API key** mein key type kar dein.
 - Picture quality YouTube khud internet ki speed ke hisaab se chunta hai.
 
 ### Watcho / Dodear ka content app ke andar kyun nahi
-Watcho (Dish TV) ka koi public API nahi, aur us ki movies/TV channels login, subscription aur DRM ke peeche hain. Unhein kisi doosri app mein khenchna un ki hifazat todna hoga, jo hum nahi karte. Dodear ki bhi koi official API nahi hai. Is liye yeh tiles official app kholti hain, aur Hollywood/Bollywood/Live TV jaisi cheezein **Movies & TV** tile mein YouTube ke zariye milti hain.
+Watcho (Dish TV) ka koi public API nahi, aur us ki movies/TV channels login, subscription aur DRM ke peeche hain. Unhein kisi doosri app mein khenchna un ki hifazat todna hoga, jo hum nahi karte. Dodear ki bhi koi official API nahi hai. Is liye content ko "khencha" nahi jata. Version 1.3.0 se **Movies & TV** aur **Web TV** tiles Watcho ki apni website app ke andar kholti hain, jahan aap apne account se login karte hain aur Watcho ka apna player chalta hai (oopar 1B dekhein).
 
 ---
 

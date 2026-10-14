@@ -156,6 +156,38 @@
     <string name="yt_key_clear">Use built-in</string>
     <string name="save">Save</string>
 
+    <!-- Watcho website inside TV Hub (Movies & TV, Web TV) -->
+    <string name="tile_webtv">Web TV</string>
+    <string name="status_watcho_web">Watcho website</string>
+    <string name="web_hint">▲▼◀▶: move pointer · OK: click · CH+/CH−: scroll · Menu: options · Back: back</string>
+    <string name="web_help_text">Pointer: ▲▼◀▶ (hold to go faster). At the screen edge it scrolls the page.\nOK = click · hold OK = long-press / drag a slider.\nCH+ / CH− = scroll one page · ⏯ = play/pause · ⏪ ⏩ = 10 s.\nSign in once with your Watcho account; TV Hub remembers it.\nFull-screen video: Back to leave full screen.\nIf the keyboard doesn\'t appear: click the box, then Menu → Type text.</string>
+    <string name="web_home">Home (start page)</string>
+    <string name="web_reload">Reload</string>
+    <string name="web_type_text">Type text</string>
+    <string name="web_type_msg">First click a text box on the page with OK (search, phone number, OTP). Then type here.</string>
+    <string name="web_type_enter">Type + Enter</string>
+    <string name="web_type_only">Type only</string>
+    <string name="web_type_no_box">No text box is selected. Move the pointer onto a box, press OK, then try again.</string>
+    <string name="web_zoom_in">Zoom in (bigger)</string>
+    <string name="web_zoom_out">Zoom out (smaller)</string>
+    <string name="web_save_start">Open this page every time for \"%1$s\"</string>
+    <string name="web_saved_start">Saved. \"%1$s\" will now open on this page.</string>
+    <string name="web_address">Website address…</string>
+    <string name="web_address_msg">Normally watcho.pk. Change it only if your Watcho web address is different.</string>
+    <string name="web_go">Open</string>
+    <string name="web_reset_start">Reset to Watcho</string>
+    <string name="web_use_mobile">Show mobile website</string>
+    <string name="web_use_desktop">Show desktop website</string>
+    <string name="web_open_watcho_app">Open Watcho app instead</string>
+    <string name="web_sign_out">Sign out / clear website data</string>
+    <string name="web_sign_out_msg">This signs you out of the website and clears its saved data on this TV.</string>
+    <string name="web_sign_out_yes">Sign out</string>
+    <string name="web_help">Remote help</string>
+    <string name="web_link_unsupported">This link can\'t be opened on this TV.</string>
+    <string name="web_err_load">The page could not load (%1$s).</string>
+    <string name="web_err_hint">Check the internet, then press OK to try again. Back: close.</string>
+    <string name="web_err_webview">The website can\'t open.\n\nThis TV\'s \"Android System WebView\" may be too old or missing. Update it from the Play Store, or use the Watcho tile (official app).</string>
+
     <!-- Movies & TV tabs -->
     <string name="mt_latest">Latest</string>
     <string name="mt_search_movies">Search movies… (name of the film)</string>

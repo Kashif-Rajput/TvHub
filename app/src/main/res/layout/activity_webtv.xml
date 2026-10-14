@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- The WebView is added here from code (so a missing/broken WebView can't crash the screen). -->
+    <FrameLayout
+        android:id="@+id/web_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Full-screen video from the website goes here. -->
+    <FrameLayout
+        android:id="@+id/full_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone" />
+
+    <!-- Page loading bar -->
+    <ProgressBar
+        android:id="@+id/page_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="top"
+        android:max="100"
+        android:progressTint="@color/accent"
+        android:visibility="gone" />
+
+    <!-- Short help line, shown for a few seconds -->
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/safe_v"
+        android:background="@drawable/bg_osd"
+        android:paddingStart="18dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="8dp"
+        android:text="@string/web_hint"
+        android:textColor="@color/text"
+        android:textSize="@dimen/text_small"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_osd"
+        android:gravity="center"
+        android:maxWidth="680dp"
+        android:padding="24dp"
+        android:textColor="@color/text"
+        android:textSize="@dimen/text_section"
+        android:visibility="gone" />
+
+    <!-- Pointer: moved with translationX/Y. Its tip is the top-left corner. -->
+    <ImageView
+        android:id="@+id/cursor"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="top|start"
+        android:elevation="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_cursor" />
+</FrameLayout>
