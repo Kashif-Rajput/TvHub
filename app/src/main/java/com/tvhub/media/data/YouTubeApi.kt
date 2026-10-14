@@ -33,7 +33,9 @@ data class YtQuery(
     val categoryId: String? = null,
     val live: Boolean = false,
     /** "short" (<4 min), "medium" (4–20 min), "long" (>20 min), or null for any. */
-    val duration: String? = null
+    val duration: String? = null,
+    /** Only videos uploaded in the last N days ("latest"). Null = any time. */
+    val recentDays: Int? = null
 )
 
 class YtException(val kind: Kind, message: String) : Exception(message) {
@@ -89,6 +91,7 @@ object YouTubeApi {
             )
         if (query.live) b.appendQueryParameter("eventType", "live")
         query.duration?.let { b.appendQueryParameter("videoDuration", it) }
+        query.recentDays?.let { b.appendQueryParameter("publishedAfter", daysAgoUtc(it)) }
         if (pageToken != null) b.appendQueryParameter("pageToken", pageToken)
 
         val ttl = if (query.live) 15 * MIN else 6 * HOUR
@@ -255,6 +258,16 @@ object YouTubeApi {
         if (h == 0L && min == 0L && s == 0L) return ""
         return if (h > 0) String.format(Locale.US, "%d:%02d:%02d", h, min, s)
         else String.format(Locale.US, "%d:%02d", min, s)
+    }
+
+    /** Midnight UTC, N days ago, as RFC 3339. Rounded to the day so the cache still works. */
+    private fun daysAgoUtc(days: Int): String {
+        val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"), Locale.US)
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -days)
+        return String.format(
+            Locale.US, "%04d-%02d-%02dT00:00:00Z",
+            cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.DAY_OF_MONTH)
+        )
     }
 
     private fun md5(s: String): String =

@@ -19,8 +19,8 @@ android {
         applicationId = "com.tvhub.media"
         minSdk = 28          // Android 9 (many local TVs are Android 9 even if they say otherwise)
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 4
+        versionName = "1.2.0"
 
         buildConfigField("String", "YT_API_KEY", "\"$ytApiKey\"")
 

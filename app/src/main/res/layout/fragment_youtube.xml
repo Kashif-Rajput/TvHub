@@ -21,6 +21,20 @@
             android:textSize="@dimen/text_title"
             android:textStyle="bold" />
 
+        <!-- Tabs (Movies & TV screen only), like Watcho: Movies / Videos / TV Channels -->
+        <LinearLayout
+            android:id="@+id/tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/tab_1" style="@style/TvButton" android:textStyle="bold" />
+            <TextView android:id="@+id/tab_2" style="@style/TvButton" android:textStyle="bold" />
+            <TextView android:id="@+id/tab_3" style="@style/TvButton" android:textStyle="bold" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
@@ -40,7 +54,7 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <!-- Search row (YouTube screen only) -->
+    <!-- Search row -->
     <LinearLayout
         android:id="@+id/search_row"
         android:layout_width="match_parent"
@@ -86,6 +100,18 @@
             android:layout_marginEnd="0dp"
             android:text="@string/yt_open_app" />
     </LinearLayout>
+
+    <!-- Year buttons (Movies tab only) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/years"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone" />
 
     <!-- Category chips -->
     <androidx.recyclerview.widget.RecyclerView

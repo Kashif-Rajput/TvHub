@@ -34,10 +34,13 @@ Android 9 aur us se naye TV ke liye. Isay remote se poora chalaya ja sakta hai, 
 
 ---
 
-## 1A. Naya (version 1.1.0): YouTube aur "Movies & TV" app ke andar
+## 1A. Naya (version 1.1.0 / 1.2.0): YouTube aur "Movies & TV" app ke andar
 
 - **YouTube tile:** upar search box hai. OK dabayein, keyboard khulega, likh kar Search dabayein (remote mein mic ho to 🎤 Voice bhi). Results neeche aate hain. Kisi video par OK dabayein, woh **TV Hub ke andar** chalegi. Neeche scroll karne par aur videos khud aati hain. Search ke neeche Trending, Top Music, Live News, Cricket waghera ke button bhi hain.
-- **Movies & TV tile:** Hollywood, Hollywood (Hindi), Bollywood, South (Hindi Dubbed), Pakistani Movies, Punjabi, Pakistani Dramas, Indian Serials, Live TV (Pakistan / India / All), Live Sports, Comedy, Cartoon Movies, Documentaries, Songs. Button par OK dabate hi us ki videos neeche aa jati hain.
+- **Movies & TV tile (Watcho jaisi, version 1.2.0):** upar 3 tabs hain: **Movies**, **Videos**, **TV Channels**. Har tab mein apna search box hai.
+  - **Movies:** Hollywood, Hollywood (Hindi), Bollywood, South (Hindi Dubbed), Pakistani, Punjabi, Action, Comedy, Horror, Romantic, Cartoon Movies, Islamic History. Saal ke buttons: **Latest** (pichhle 6 mahine mein aayi), 2026, 2025 ... 2000. Search mein film ka naam likhein, saal bhi chun sakte hain.
+  - **Videos:** Reality Shows, Songs, Pakistani Dramas, Indian Serials, Web Series, Comedy Shows, Talk Shows, Kids, Cooking, Naat / Bayan, Cricket, Documentaries. Har section mein pichhle 30 din ki latest videos.
+  - **TV Channels:** All Live, Pakistan News, India News, World News, Sports, Religious, Entertainment, Music, Kids. Sirf jo is waqt live chal rahe hain. Search mein channel ka naam likhein (jaise Geo, ARY, PTV).
 - **Player ke buttons:** OK = Play/Pause · ◀ ▶ = 10 second peeche/aage (dabaye rakhein to 30) · ▲ ▼ = info · Menu = Agli / Pichhli video / YouTube app mein kholein · CH+ / CH− = agli / pichhli · Back = band.
 - Video khatam hone par list ki agli video khud chal jati hai.
 - Har section aur search ki list TV mein kuch ghante ke liye yaad rehti hai, taa ke YouTube ka muft limit bache.

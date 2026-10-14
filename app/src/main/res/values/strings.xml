@@ -155,4 +155,10 @@
     <string name="yt_key_dialog_msg">Paste or type your key (starts with AIza). Leave empty to use the key built into the app.</string>
     <string name="yt_key_clear">Use built-in</string>
     <string name="save">Save</string>
+
+    <!-- Movies & TV tabs -->
+    <string name="mt_latest">Latest</string>
+    <string name="mt_search_movies">Search movies… (name of the film)</string>
+    <string name="mt_search_videos">Search shows, songs, dramas…</string>
+    <string name="mt_search_tv">Search TV channels… (e.g. Geo, ARY, PTV)</string>
 </resources>

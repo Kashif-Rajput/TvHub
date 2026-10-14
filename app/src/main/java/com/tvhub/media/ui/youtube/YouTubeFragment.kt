@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -29,6 +30,7 @@ import com.tvhub.media.data.YtCategories
 import com.tvhub.media.data.YtCategory
 import com.tvhub.media.data.YtException
 import com.tvhub.media.data.YtQuery
+import com.tvhub.media.data.YtTab
 import com.tvhub.media.data.YtVideo
 import com.tvhub.media.databinding.FragmentYoutubeBinding
 import com.tvhub.media.player.YouTubePlayerActivity
@@ -42,7 +44,8 @@ import kotlinx.coroutines.withContext
 /**
  * Two screens in one:
  *  - MODE_YOUTUBE: search box + a few sections (Trending, Music, Live News...)
- *  - MODE_MOVIES:  "Movies & TV" sections (Hollywood, Bollywood, Dramas, Live TV...)
+ *  - MODE_MOVIES:  Watcho-style tabs (Movies / Videos / TV Channels). Each tab has its own
+ *                  search box and sections; Movies also has year buttons (Latest, 2026, 2025...).
  * Results appear below; OK on a video plays it inside TV Hub.
  */
 class YouTubeFragment : Fragment(), MenuKeyHandler {
@@ -51,22 +54,31 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
     private val b get() = _b!!
 
     private val mode get() = arguments?.getString(ARG_MODE) ?: MODE_YOUTUBE
-    private val categories: List<YtCategory>
-        get() = if (mode == MODE_MOVIES) YtCategories.moviesTv else YtCategories.youtube
+    private val isMovies get() = mode == MODE_MOVIES
 
     private lateinit var chipAdapter: ChipAdapter
+    private var yearAdapter: ChipAdapter? = null
     private lateinit var videoAdapter: YtVideoAdapter
 
     // Survives view re-creation while the fragment sits on the back stack.
+    private var tabIndex = 0
+    private var selectedChip: String? = null
+    private var selectedYear: String = YtCategories.YEAR_LATEST
+    /** Text the user searched for in the current tab; null = a section is showing. */
+    private var activeSearch: String? = null
+    private val searchTextPerTab = HashMap<Int, String>()
+
     private var query: YtQuery? = null
     private var label: String = ""
-    private var selectedChip: String? = null
     private val videos = ArrayList<YtVideo>()
     private var nextToken: String? = null
     private var lastFocusPos = -1
     private var loadJob: Job? = null
     private var loading = false
     private var generation = 0
+
+    private val tab: YtTab? get() = if (isMovies) YtCategories.moviesTabs[tabIndex] else null
+    private val categories: List<YtCategory> get() = tab?.categories ?: YtCategories.youtube
 
     private val voiceLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         if (r.resultCode != Activity.RESULT_OK) return@registerForActivityResult
@@ -84,18 +96,26 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val ctx = requireContext()
-        b.title.setText(if (mode == MODE_MOVIES) R.string.tile_movies else R.string.tile_youtube)
+        b.title.setText(if (isMovies) R.string.tile_movies else R.string.tile_youtube)
 
-        // ---- search row
-        val isYt = mode == MODE_YOUTUBE
-        b.searchRow.visibility = if (isYt) View.VISIBLE else View.GONE
-        if (isYt) setupSearch()
+        setupSearch()
 
-        // ---- chips
-        chipAdapter = ChipAdapter(categories) { cat, _ -> openCategory(cat) }
-        chipAdapter.selectedId = selectedChip
+        // ---- tabs (Movies & TV only)
+        b.tabs.visibility = if (isMovies) View.VISIBLE else View.GONE
+        if (isMovies) {
+            tabViews().forEachIndexed { i, tv ->
+                tv.text = YtCategories.moviesTabs[i].label
+                Focus.attach(tv)
+                tv.setOnClickListener { if (i != tabIndex) openTab(i) }
+            }
+        }
+
+        // ---- year buttons (Movies tab only)
+        b.years.layoutManager = LinearLayoutManager(ctx, RecyclerView.HORIZONTAL, false)
+        b.years.itemAnimator = null
+
+        // ---- section chips
         b.chips.layoutManager = LinearLayoutManager(ctx, RecyclerView.HORIZONTAL, false)
-        b.chips.adapter = chipAdapter
         b.chips.itemAnimator = null
 
         // ---- results grid
@@ -109,13 +129,15 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
                 if (glm.findLastVisibleItemPosition() >= videos.size - 8) loadMore()
             }
         })
+
+        bindTabUi()
         videoAdapter.submitList(videos.toList())
 
         if (!YouTubeApi.hasKey()) {
             showMessage(getString(R.string.yt_no_key))
         } else if (query == null) {
-            // First open: show the first section straight away.
-            categories.firstOrNull()?.let { openCategory(it, focusResults = false) }
+            // First open: show the first section straight away (latest videos).
+            categories.firstOrNull()?.let { openCategory(it) }
         } else {
             updateSubtitle()
             if (videos.isEmpty() && !loading) showMessage(getString(R.string.yt_no_results))
@@ -125,8 +147,8 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
             if (_b == null) return@post
             when {
                 lastFocusPos >= 0 && videos.isNotEmpty() -> b.list.focusPosition(lastFocusPos)
-                isYt -> b.search.requestFocus()
-                else -> b.chips.focusPosition(categories.indexOfFirst { it.id == selectedChip }.coerceAtLeast(0))
+                isMovies -> tabViews()[tabIndex].requestFocus()
+                else -> b.search.requestFocus()
             }
         }
     }
@@ -135,19 +157,81 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
         _b?.let { binding ->
             val f = binding.list.focusedChild
             lastFocusPos = if (f != null) binding.list.getChildAdapterPosition(f) else -1
+            searchTextPerTab[tabIndex] = binding.search.text?.toString().orEmpty()
         }
         _b = null
         super.onDestroyView()
+    }
+
+    // ------------------------------------------------------------------ tabs
+
+    private fun tabViews(): List<TextView> = listOf(b.tab1, b.tab2, b.tab3)
+
+    private fun openTab(i: Int) {
+        val binding = _b ?: return
+        searchTextPerTab[tabIndex] = binding.search.text?.toString().orEmpty()
+        tabIndex = i
+        activeSearch = null
+        selectedChip = null
+        selectedYear = YtCategories.YEAR_LATEST
+        binding.search.setText(searchTextPerTab[i].orEmpty())
+        bindTabUi()
+        categories.firstOrNull()?.let { openCategory(it) }
+    }
+
+    /** Shows the right search hint, year row and section chips for the current tab. */
+    private fun bindTabUi() {
+        val binding = _b ?: return
+        val ctx = requireContext()
+        val t = tab
+        if (isMovies) {
+            tabViews().forEachIndexed { i, tv ->
+                tv.setTextColor(ContextCompat.getColor(ctx, if (i == tabIndex) R.color.accent else R.color.text))
+            }
+        }
+        binding.search.setHint(
+            when (t?.id) {
+                "movies" -> R.string.mt_search_movies
+                "videos" -> R.string.mt_search_videos
+                "tv" -> R.string.mt_search_tv
+                else -> R.string.yt_search_hint
+            }
+        )
+
+        if (t?.hasYears == true) {
+            val ya = ChipAdapter(YtCategories.years(getString(R.string.mt_latest))) { y, _ -> onYear(y.id) }
+            ya.selectedId = selectedYear
+            yearAdapter = ya
+            binding.years.adapter = ya
+            binding.years.visibility = View.VISIBLE
+        } else {
+            yearAdapter = null
+            binding.years.adapter = null
+            binding.years.visibility = View.GONE
+        }
+
+        chipAdapter = ChipAdapter(categories) { cat, _ -> openCategory(cat) }
+        chipAdapter.selectedId = if (activeSearch == null) selectedChip else null
+        binding.chips.adapter = chipAdapter
+    }
+
+    private fun onYear(id: String) {
+        selectedYear = id
+        yearAdapter?.selectedId = id
+        refreshCurrent()
     }
 
     // ------------------------------------------------------------------ search box
 
     private fun setupSearch() {
         val et = b.search
-        if (et.text.isNullOrEmpty()) et.setText(Prefs.ytLastSearch)
+        if (et.text.isNullOrEmpty()) {
+            et.setText(if (isMovies) searchTextPerTab[tabIndex].orEmpty() else Prefs.ytLastSearch)
+        }
         Focus.attach(b.btnSearch)
         Focus.attach(b.btnVoice)
         Focus.attach(b.btnApp)
+        b.btnApp.visibility = if (isMovies) View.GONE else View.VISIBLE
 
         et.setOnEditorActionListener { v, actionId, event ->
             val enter = event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP
@@ -178,7 +262,7 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
         b.btnVoice.setOnClickListener {
             val i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
                 .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                .putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.yt_search_hint))
+                .putExtra(RecognizerIntent.EXTRA_PROMPT, b.search.hint?.toString().orEmpty())
             try {
                 voiceLauncher.launch(i)
             } catch (e: Exception) {
@@ -209,18 +293,59 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
             Toast.makeText(requireContext(), R.string.yt_type_something, Toast.LENGTH_SHORT).show()
             return
         }
-        Prefs.ytLastSearch = q
+        if (isMovies) searchTextPerTab[tabIndex] = q else Prefs.ytLastSearch = q
+        activeSearch = q
         selectedChip = null
-        chipAdapter.selectedId = null
-        start(YtQuery(q = q), getString(R.string.yt_results_for, q), focusResults = true)
+        if (_b != null) chipAdapter.selectedId = null
+        refreshCurrent(focusResults = true)
     }
 
     // ------------------------------------------------------------------ sections
 
-    private fun openCategory(cat: YtCategory, focusResults: Boolean = false) {
+    private fun openCategory(cat: YtCategory) {
         selectedChip = cat.id
+        activeSearch = null
         if (_b != null) chipAdapter.selectedId = cat.id
-        start(cat.query, cat.label, focusResults)
+        refreshCurrent()
+    }
+
+    /** Builds the query from: tab + (search text OR section) + year, then loads it. */
+    private fun refreshCurrent(focusResults: Boolean = false) {
+        val t = tab
+        val search = activeSearch
+        val year = if (t?.hasYears == true && selectedYear != YtCategories.YEAR_LATEST) selectedYear else null
+        val yearText = if (year != null) " $year" else ""
+        val yearLabel = when {
+            t?.hasYears != true -> ""
+            year != null -> " · $year"
+            search == null -> " · " + getString(R.string.mt_latest)
+            else -> ""
+        }
+
+        if (search != null) {
+            val q = if (t == null) {
+                YtQuery(q = search)
+            } else {
+                YtQuery(
+                    q = search + t.searchSuffix + yearText,
+                    live = t.searchLive,
+                    duration = t.searchDuration
+                )
+            }
+            start(q, getString(R.string.yt_results_for, search) + yearLabel, focusResults)
+            return
+        }
+
+        val cat = categories.firstOrNull { it.id == selectedChip } ?: categories.firstOrNull() ?: return
+        selectedChip = cat.id
+        val base = cat.query
+        val q = if (t?.hasYears == true) {
+            // "Latest" = recently uploaded. A year = that year's movies (any upload date).
+            base.copy(q = (base.q ?: "") + yearText, recentDays = if (year == null) base.recentDays else null)
+        } else {
+            base
+        }
+        start(q, cat.label + yearLabel, focusResults)
     }
 
     private fun start(q: YtQuery, title: String, focusResults: Boolean) {
@@ -234,7 +359,7 @@ class YouTubeFragment : Fragment(), MenuKeyHandler {
         videos.clear()
         nextToken = null
         lastFocusPos = -1
-        videoAdapter.submitList(emptyList())
+        if (_b != null) videoAdapter.submitList(emptyList())
         updateSubtitle()
         load(null, focusResults)
     }
