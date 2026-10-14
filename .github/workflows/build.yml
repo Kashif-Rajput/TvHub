@@ -16,6 +16,8 @@ jobs:
           java-version: '17'
 
       - name: Build debug APK
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
