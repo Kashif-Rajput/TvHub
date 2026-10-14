@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TV overscan-safe margins (5% of 960x540dp) -->
+    <dimen name="safe_h">48dp</dimen>
+    <dimen name="safe_v">27dp</dimen>
+    <dimen name="tile_height">124dp</dimen>
+    <dimen name="card_thumb_height">118dp</dimen>
+    <dimen name="row_thumb">56dp</dimen>
+    <dimen name="gap">10dp</dimen>
+    <dimen name="text_title">28sp</dimen>
+    <dimen name="text_section">20sp</dimen>
+    <dimen name="text_body">17sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+</resources>

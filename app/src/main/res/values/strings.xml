@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Hub</string>
+
+    <string name="tile_youtube">YouTube</string>
+    <string name="tile_watcho">Watcho</string>
+    <string name="tile_dodear">Dodear</string>
+    <string name="tile_usb">USB Storage</string>
+    <string name="tile_videos">Videos</string>
+    <string name="tile_music">Music</string>
+    <string name="tile_pictures">Pictures</string>
+    <string name="tile_apps">Apps</string>
+    <string name="tile_settings">Settings</string>
+
+    <string name="status_installed">Installed</string>
+    <string name="status_not_found">Not installed</string>
+
+    <string name="continue_watching">Continue Watching</string>
+    <string name="recently_played">Recently Played</string>
+
+    <string name="usb_none">USB: no drive connected</string>
+    <string name="usb_one">USB: %1$s · %2$s free of %3$s</string>
+    <string name="usb_many">USB: %1$d drives connected</string>
+    <string name="usb_connected">USB drive connected</string>
+    <string name="usb_removed">USB drive removed</string>
+
+    <string name="press_back_again">Press Back again to exit</string>
+
+    <string name="app_missing_title">%1$s not found</string>
+    <string name="app_missing_msg">%1$s is not installed on this TV, or it uses a different name. You can search for it in the Play Store, or pick the correct app from your installed apps.</string>
+    <string name="app_search_store">Search Play Store</string>
+    <string name="app_pick_installed">Choose installed app</string>
+    <string name="app_pick_title">Which app is %1$s?</string>
+    <string name="app_reset">Reset to automatic</string>
+    <string name="no_store">This TV has no Play Store. Install the app from the TV maker\'s app store or as an APK.</string>
+    <string name="launch_failed">Could not open the app.</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="loading">Loading…</string>
+    <string name="sort_name">Sort: Name</string>
+    <string name="sort_date">Sort: Newest</string>
+    <string name="sort_size">Sort: Size</string>
+    <string name="source_all">Source: All storage</string>
+    <string name="source_one">Source: %1$s</string>
+    <string name="refresh">Refresh</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="items_count">%1$d items</string>
+    <string name="empty_media">Nothing found here.\n\nConnect a USB drive and press Refresh. If files still don\'t appear, open USB Storage and browse the folders directly (some TVs don\'t index USB drives).</string>
+    <string name="perm_needed">Storage permission is needed to show your files.</string>
+    <string name="grant">Grant permission</string>
+    <string name="open_settings">Open app settings</string>
+
+    <string name="browser_title">USB Storage</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="folder">Folder</string>
+    <string name="empty_folder">This folder is empty or has no readable files.</string>
+    <string name="cannot_read">Cannot read this drive. Allow access in the next screen, or turn on \"All files access\" in Settings.</string>
+    <string name="no_picker">This TV has no folder picker. Go to Settings → All files access, or use Videos / Music / Pictures.</string>
+    <string name="unsupported_file">This file type is not supported.</string>
+    <string name="drive_removed">The USB drive was removed.</string>
+
+    <string name="err_codec">This TV cannot decode this video format.</string>
+    <string name="err_corrupt">The file seems damaged or incomplete.</string>
+    <string name="err_format">This file container is not supported.</string>
+    <string name="err_file">The file can\'t be read. Was the USB drive removed?</string>
+    <string name="err_generic">Playback error (%1$s).</string>
+    <string name="err_next_hint">Press OK to play the next file, or Back to close.</string>
+    <string name="video_track_unsupported">This TV can\'t decode the video in this file. Only audio may play.</string>
+    <string name="audio_track_unsupported">This file\'s audio format isn\'t supported here, so there may be no sound. Try turning on \"Extra audio decoder\" in Settings.</string>
+    <string name="resumed_at">Resumed at %1$s · press ⏮ to start over</string>
+    <string name="options">Options</string>
+    <string name="subtitles_off">Subtitles: Off</string>
+    <string name="video_size">Video size: %1$s</string>
+    <string name="size_fit">Fit (original shape)</string>
+    <string name="size_fill">Fill screen (stretch)</string>
+    <string name="size_zoom">Zoom (crop edges)</string>
+    <string name="stop_music">Stop music and close</string>
+    <string name="nothing_playing">Nothing is playing.</string>
+    <string name="music_background">Music keeps playing. Open Music → Now Playing to control it.</string>
+
+    <string name="image_error">Can\'t open this image.</string>
+    <string name="slideshow_on">Slideshow on</string>
+    <string name="slideshow_off">Slideshow off</string>
+    <string name="slideshow_toggle">Start / stop slideshow</string>
+    <string name="slideshow_interval">Slideshow speed: %1$d s</string>
+    <string name="zoom_reset">Reset zoom</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="set_animations">Animations</string>
+    <string name="set_video_size">Default video size</string>
+    <string name="set_ffmpeg">Extra audio decoder (AC3 / DTS)</string>
+    <string name="set_tunnel">Tunneled video (advanced)</string>
+    <string name="set_tunnel_hint">Smoother on some TVs, glitchy on others. Keep Off unless video stutters.</string>
+    <string name="set_storage_perm">Storage permission</string>
+    <string name="set_all_files">All files access (optional)</string>
+    <string name="set_launcher">Use TV Hub as home screen</string>
+    <string name="set_launcher_hint">Depends on your TV firmware. You can always switch back.</string>
+    <string name="set_clear">Clear history and thumbnails</string>
+    <string name="set_device">Device</string>
+    <string name="set_display">Display</string>
+    <string name="set_decoders">Hardware video decoders</string>
+    <string name="set_version">App version</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="granted">Granted</string>
+    <string name="not_granted">Not granted</string>
+    <string name="cleared">Cleared</string>
+    <string name="setting_unavailable">This TV doesn\'t provide that settings screen.</string>
+    <string name="launcher_enabled_hint">Now press the Home button and choose TV Hub (if your TV asks). To undo, turn this Off.</string>
+</resources>

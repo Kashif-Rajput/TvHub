@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/safe_h"
+        android:layout_marginTop="@dimen/safe_v"
+        android:layout_marginEnd="@dimen/safe_h"
+        android:layout_marginBottom="@dimen/safe_v"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <TextView
+        android:id="@+id/now_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="@dimen/safe_h"
+        android:layout_marginTop="@dimen/safe_v"
+        android:layout_marginEnd="@dimen/safe_h"
+        android:background="@drawable/bg_osd"
+        android:maxWidth="640dp"
+        android:paddingStart="14dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="6dp"
+        android:textColor="@color/text"
+        android:textSize="@dimen/text_section" />
+</FrameLayout>
