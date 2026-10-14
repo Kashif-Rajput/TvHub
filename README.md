@@ -34,6 +34,43 @@ Android 9 aur us se naye TV ke liye. Isay remote se poora chalaya ja sakta hai, 
 
 ---
 
+## 1A. Naya (version 1.1.0): YouTube aur "Movies & TV" app ke andar
+
+- **YouTube tile:** upar search box hai. OK dabayein, keyboard khulega, likh kar Search dabayein (remote mein mic ho to 🎤 Voice bhi). Results neeche aate hain. Kisi video par OK dabayein, woh **TV Hub ke andar** chalegi. Neeche scroll karne par aur videos khud aati hain. Search ke neeche Trending, Top Music, Live News, Cricket waghera ke button bhi hain.
+- **Movies & TV tile:** Hollywood, Hollywood (Hindi), Bollywood, South (Hindi Dubbed), Pakistani Movies, Punjabi, Pakistani Dramas, Indian Serials, Live TV (Pakistan / India / All), Live Sports, Comedy, Cartoon Movies, Documentaries, Songs. Button par OK dabate hi us ki videos neeche aa jati hain.
+- **Player ke buttons:** OK = Play/Pause · ◀ ▶ = 10 second peeche/aage (dabaye rakhein to 30) · ▲ ▼ = info · Menu = Agli / Pichhli video / YouTube app mein kholein · CH+ / CH− = agli / pichhli · Back = band.
+- Video khatam hone par list ki agli video khud chal jati hai.
+- Har section aur search ki list TV mein kuch ghante ke liye yaad rehti hai, taa ke YouTube ka muft limit bache.
+- Watcho aur Dodear tiles pehle ki tarah un ki **official app** kholti hain (neeche wajah).
+
+### YouTube API key (sirf 1 dafa, muft)
+Search aur sections ke liye Google ki muft "YouTube Data API key" chahiye. Is ke baghair YouTube screen par message aayega.
+
+1. Computer par **console.cloud.google.com** kholein aur apne Gmail se login karein.
+2. Upar **Select a project → New Project** → naam `TvHub` → **Create**.
+3. Upar search mein **YouTube Data API v3** likhein → kholein → **Enable**.
+4. Left menu: **APIs & Services → Credentials → + Create credentials → API key**. Key copy karein (yeh `AIza` se shuru hoti hai).
+5. GitHub par apni **TvHub** repository kholein → **Settings → Secrets and variables → Actions → New repository secret**.
+   - Name: `YT_API_KEY`
+   - Secret: copy ki hui key paste karein → **Add secret**.
+6. Nayi APK banayein (Actions). Key APK ke andar chali jayegi, lekin aap ki public repository mein nazar nahi aayegi.
+
+Doosra tareeqa: TV par **Settings → YouTube API key** mein key type kar dein.
+
+**Limit:** muft key se rozana taqreeban **100 searches** (har section ka pehla khulna bhi ek search hai). "Trending" aur "Top Music" bohat sasti hain. Limit khatam ho to agle din (Pakistan waqt taqreeban 12–1 baje dopahar) theek ho jata hai.
+
+*Optional hifazat:* Google Cloud mein key par click → **Application restrictions → Android apps** → Package `com.tvhub.media`, SHA-1 `9D:34:E2:03:CF:8A:F2:C9:38:9D:9B:EF:E9:4A:5A:12:FD:C2:4F:D5` → Save. Phir yeh key sirf TV Hub mein chalegi.
+
+### Kuch videos kyun nahi chalti
+- Kuch channel apni video doosri apps mein chalne nahi dete. Aisi video par message aayega. OK = agli video, Menu → "YouTube app mein kholein".
+- Player TV ki **Android System WebView** use karta hai. Agar "player could not start" aaye to Play Store se *Android System WebView* update karein.
+- Picture quality YouTube khud internet ki speed ke hisaab se chunta hai.
+
+### Watcho / Dodear ka content app ke andar kyun nahi
+Watcho (Dish TV) ka koi public API nahi, aur us ki movies/TV channels login, subscription aur DRM ke peeche hain. Unhein kisi doosri app mein khenchna un ki hifazat todna hoga, jo hum nahi karte. Dodear ki bhi koi official API nahi hai. Is liye yeh tiles official app kholti hain, aur Hollywood/Bollywood/Live TV jaisi cheezein **Movies & TV** tile mein YouTube ke zariye milti hain.
+
+---
+
 ## 2. APK kaise banayein (Windows / Mac / Linux)
 
 1. **Android Studio** install karein (developer.android.com/studio). Pehli dafa khulne par yeh SDK khud download karega.

@@ -11,7 +11,10 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.text.InputType
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
@@ -23,6 +26,7 @@ import com.tvhub.media.core.Format
 import com.tvhub.media.core.Perms
 import com.tvhub.media.core.Prefs
 import com.tvhub.media.data.PlaybackStore
+import com.tvhub.media.data.YouTubeApi
 import com.tvhub.media.databinding.FragmentSettingsBinding
 import com.tvhub.media.databinding.ItemSettingBinding
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +34,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsFragment : Fragment() {
+
+    companion object {
+        private val REGIONS = listOf("PK", "IN", "AE", "SA", "GB", "US")
+    }
 
     private class Row(
         val titleRes: Int,
@@ -103,11 +111,19 @@ class SettingsFragment : Fragment() {
         }) {
             if (!Perms.openAllFilesSettings(requireContext())) toast(R.string.setting_unavailable)
         },
+        Row(R.string.set_yt_key, R.string.set_yt_key_hint, value = { ytKeyState() }) {
+            editYtKey()
+        },
+        Row(R.string.set_yt_region, value = { Prefs.ytRegion }) {
+            val i = REGIONS.indexOf(Prefs.ytRegion)
+            Prefs.ytRegion = REGIONS[(i + 1) % REGIONS.size]
+        },
         Row(R.string.set_launcher, R.string.set_launcher_hint, value = { on(isLauncherEnabled()) }) {
             toggleLauncher()
         },
         Row(R.string.set_clear, value = { "" }) {
             PlaybackStore.clear()
+            YouTubeApi.clearCache()
             requireContext().imageLoader.memoryCache?.clear()
             toast(R.string.cleared)
         },
@@ -148,6 +164,41 @@ class SettingsFragment : Fragment() {
             else -> R.string.size_fit
         }
     )
+
+    // ------------------------------------------------------------ YouTube
+
+    private fun ytKeyState(): String = getString(
+        when {
+            !Prefs.ytApiKey.isNullOrBlank() -> R.string.yt_key_custom
+            BuildConfig.YT_API_KEY.isNotBlank() -> R.string.yt_key_builtin
+            else -> R.string.yt_key_missing
+        }
+    )
+
+    private fun editYtKey() {
+        val ctx = requireContext()
+        val input = EditText(ctx).apply {
+            setSingleLine()
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            setText(Prefs.ytApiKey.orEmpty())
+            hint = "AIza…"
+        }
+        AlertDialog.Builder(ctx)
+            .setTitle(R.string.set_yt_key)
+            .setMessage(R.string.yt_key_dialog_msg)
+            .setView(input)
+            .setPositiveButton(R.string.save) { _, _ ->
+                Prefs.ytApiKey = input.text.toString()
+                YouTubeApi.clearCache()
+                refresh()
+            }
+            .setNeutralButton(R.string.yt_key_clear) { _, _ ->
+                Prefs.ytApiKey = null
+                refresh()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
 
     // ------------------------------------------------------------ home screen (launcher) mode
 

@@ -5,6 +5,12 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// YouTube Data API key. Best kept as a GitHub secret named YT_API_KEY (see README).
+// It can also go in gradle.properties as YT_API_KEY=..., or be typed in the app's Settings.
+val ytApiKey: String = (System.getenv("YT_API_KEY")?.takeIf { it.isNotBlank() }
+    ?: (project.findProperty("YT_API_KEY") as String?)
+    ?: "").trim().replace("\"", "")
+
 android {
     namespace = "com.tvhub.media"
     compileSdk = 36
@@ -13,8 +19,10 @@ android {
         applicationId = "com.tvhub.media"
         minSdk = 28          // Android 9 (many local TVs are Android 9 even if they say otherwise)
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.1.0"
+
+        buildConfigField("String", "YT_API_KEY", "\"$ytApiKey\"")
 
         // Budget TVs are ARM. Dropping x86 keeps the APK small.
         ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }

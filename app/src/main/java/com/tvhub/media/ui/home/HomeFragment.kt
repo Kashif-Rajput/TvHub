@@ -37,6 +37,8 @@ import com.tvhub.media.ui.common.Tile
 import com.tvhub.media.ui.common.TileAdapter
 import com.tvhub.media.ui.media.MediaListFragment
 import com.tvhub.media.ui.settings.SettingsFragment
+import com.tvhub.media.ui.youtube.YouTubeFragment
+import com.tvhub.media.player.YouTubePlayerActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -146,7 +148,11 @@ class HomeFragment : Fragment(), MenuKeyHandler {
 
     private fun baseTiles(): List<Tile> {
         val list = ArrayList<Tile>()
-        AppLauncher.services.forEach { list += Tile(it.id, getString(it.labelRes), it.iconRes) }
+        AppLauncher.services.forEach { svc ->
+            list += Tile(svc.id, getString(svc.labelRes), svc.iconRes)
+            // In-app sections sit right after the YouTube tile.
+            if (svc.id == "youtube") list += Tile("movies", getString(R.string.tile_movies), R.drawable.ic_clapper)
+        }
         list += Tile("usb", getString(R.string.tile_usb), R.drawable.ic_usb)
         list += Tile("videos", getString(R.string.tile_videos), R.drawable.ic_video)
         list += Tile("music", getString(R.string.tile_music), R.drawable.ic_music)
@@ -170,10 +176,15 @@ class HomeFragment : Fragment(), MenuKeyHandler {
             tiles = tiles.map { t ->
                 val r = result[t.id] ?: return@map t
                 resolved[t.id] = r.first
-                t.copy(
-                    icon = r.second,
-                    status = if (r.first == null) getString(R.string.status_not_found) else null
-                )
+                if (t.id == "youtube") {
+                    // YouTube now plays inside TV Hub, so the official app is optional.
+                    t.copy(status = getString(R.string.status_in_app))
+                } else {
+                    t.copy(
+                        icon = r.second,
+                        status = if (r.first == null) getString(R.string.status_not_found) else null
+                    )
+                }
             }
             tileAdapter.submitList(tiles)
         }
@@ -245,6 +256,10 @@ class HomeFragment : Fragment(), MenuKeyHandler {
     private fun main() = requireActivity() as MainActivity
 
     private fun onTile(tile: Tile) {
+        when (tile.id) {
+            "youtube" -> { main().navigate(YouTubeFragment.newInstance(YouTubeFragment.MODE_YOUTUBE)); return }
+            "movies" -> { main().navigate(YouTubeFragment.newInstance(YouTubeFragment.MODE_MOVIES)); return }
+        }
         val svc = AppLauncher.services.firstOrNull { it.id == tile.id }
         if (svc != null) {
             val pkg = resolved[svc.id]
@@ -317,6 +332,13 @@ class HomeFragment : Fragment(), MenuKeyHandler {
         val f = binding.root.findFocus() ?: return false
         val vh = binding.tiles.findContainingViewHolder(f) ?: return false
         val tile = tiles.getOrNull(vh.bindingAdapterPosition) ?: return false
+        if (tile.id == "youtube") {
+            // Menu on the YouTube tile: open the official YouTube app instead.
+            if (!YouTubePlayerActivity.openInYouTubeApp(requireContext(), null)) {
+                Toast.makeText(requireContext(), R.string.yt_app_missing, Toast.LENGTH_LONG).show()
+            }
+            return true
+        }
         val svc = AppLauncher.services.firstOrNull { it.id == tile.id } ?: return false
         pickApp(svc)
         return true

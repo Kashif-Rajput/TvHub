@@ -49,4 +49,18 @@ object Prefs {
     fun setTreeUri(volumeId: String, uri: String?) = sp.edit {
         if (uri == null) remove("tree_$volumeId") else putString("tree_$volumeId", uri)
     }
+
+    /** Optional: a YouTube API key typed in Settings (overrides the one built into the APK). */
+    var ytApiKey: String?
+        get() = sp.getString("yt_key", null)
+        set(v) = sp.edit { if (v.isNullOrBlank()) remove("yt_key") else putString("yt_key", v.trim()) }
+
+    /** Country used for YouTube results and Trending. */
+    var ytRegion: String
+        get() = sp.getString("yt_region", "PK") ?: "PK"
+        set(v) = sp.edit { putString("yt_region", v) }
+
+    var ytLastSearch: String
+        get() = sp.getString("yt_last", "") ?: ""
+        set(v) = sp.edit { putString("yt_last", v) }
 }
